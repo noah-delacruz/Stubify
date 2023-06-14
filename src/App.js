@@ -14,7 +14,6 @@ function App() {
 
     // States
     const [token, setToken] = React.useState("")
-    // const [searchKey, setSearchKey] = React.useState("")
     const [topTracks, setTopTracks] = React.useState([])
     const [profileInfo, setProfileInfo] = React.useState({})
     const [showInfo, setShowInfo] = React.useState(false)
@@ -40,8 +39,8 @@ function App() {
     }
 
     // Get top tracks
-    async function getInfo(e) {
-        e.preventDefault()
+    async function getMediumInfo() {
+        // e.preventDefault()
         console.log("Getting info!")
         const {data} = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
             headers: {
@@ -66,6 +65,60 @@ function App() {
         setShowInfo(true)
     }
 
+    // Get short term top tracks
+    async function getShortInfo() {
+        // e.preventDefault()
+        console.log("Getting info!")
+        const {data} = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            params: {
+                // q: searchKey,
+                // type: "artist",
+                time_range: "short_term",
+                limit: 10
+            }
+        })
+        console.log(data.items)
+        setTopTracks(data.items)
+        const info = await axios.get("https://api.spotify.com/v1/me/", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        console.log(info.data)
+        setProfileInfo(info.data)
+        setShowInfo(true)
+    }
+
+    // Get long term top tracks
+    async function getLongInfo() {
+        // e.preventDefault()
+        console.log("Getting info!")
+        const {data} = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            params: {
+                // q: searchKey,
+                // type: "artist",
+                time_range: "long_term",
+                limit: 10
+            }
+        })
+        console.log(data.items)
+        setTopTracks(data.items)
+        const info = await axios.get("https://api.spotify.com/v1/me/", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        console.log(info.data)
+        setProfileInfo(info.data)
+        setShowInfo(true)
+    }
+
     return (
         <div className="App">
             <Header />
@@ -75,12 +128,15 @@ function App() {
                 <button onClick={logout}>Logout</button>
             }
 
-            {token &&
-                <form onSubmit={getInfo}>
-                    <button type={"submit"}>Top Tracks</button>
-                </form>
+            {token && !showInfo && <button onClick={getMediumInfo}>Top Tracks</button>}
+            {showInfo &&
+                <div>
+                    <button onClick={getShortInfo}>Last Month</button>
+                    <button onClick={getMediumInfo}>Last 6 Months</button>
+                    <button onClick={getLongInfo}>All Time</button>
+                </div>
             }
-            {showInfo && <Stub topTracks={topTracks} profileInfo={profileInfo} />}
+            {showInfo && <Stub topTracks={topTracks} profileInfo={profileInfo}/>}
         </div>
     );
 }

@@ -37,9 +37,10 @@ export default function Stub(props) {
             <p>LENGTH: {calculateLength()}</p>
             <p>featuring</p>
             {renderArtists()}
-            <p>{props.profileInfo.display_name} {new Date().getFullYear()}</p>
+            <p>COPYRIGHT: {props.profileInfo.display_name.toUpperCase()} {new Date().getFullYear()}</p>
             <p>AUDITORIUM 2</p>
             <img src={qrcode} /><br></br>
+            <p>{new Date().getMonth() + 1}/{new Date().getDate()}/{new Date().getFullYear()}</p>
             <img src={spotifylogo} />
             <h1>-------------</h1>
         </div>
