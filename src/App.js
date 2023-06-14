@@ -2,6 +2,7 @@ import React from 'react'
 import './App.css';
 import axios from 'axios';
 import Header from './components/Header';
+import Stub from './components/Stub';
 
 function App() {
     // Spotify params
@@ -16,6 +17,7 @@ function App() {
     // const [searchKey, setSearchKey] = React.useState("")
     const [topTracks, setTopTracks] = React.useState([])
     const [profileInfo, setProfileInfo] = React.useState({})
+    const [showInfo, setShowInfo] = React.useState(false)
 
     // Get access token
     React.useEffect(() => {
@@ -32,6 +34,7 @@ function App() {
 
     // Logout
     function logout() {
+        setShowInfo(false)
         setToken("")
         window.localStorage.removeItem("token")
     }
@@ -51,7 +54,7 @@ function App() {
                 limit: 10
             }
         })
-        console.log(data)
+        console.log(data.items)
         setTopTracks(data.items)
         const info = await axios.get("https://api.spotify.com/v1/me/", {
             headers: {
@@ -60,14 +63,7 @@ function App() {
         })
         console.log(info.data)
         setProfileInfo(info.data)
-    }
-    
-    function renderArtists() {
-        return topTracks.map(track => (
-            <div key={track.id}>
-                {track.name} by {track.artists[0].name}
-            </div>
-        ))
+        setShowInfo(true)
     }
 
     return (
@@ -79,14 +75,12 @@ function App() {
                 <button onClick={logout}>Logout</button>
             }
 
-            {
-                token ?
-                    <form onSubmit={getInfo}>
-                        <button type={"submit"}>Top Tracks</button>
-                    </form>
-                : <h3>Please login</h3>
+            {token &&
+                <form onSubmit={getInfo}>
+                    <button type={"submit"}>Top Tracks</button>
+                </form>
             }
-            {token && renderArtists()}
+            {showInfo && <Stub topTracks={topTracks} profileInfo={profileInfo} />}
         </div>
     );
 }
