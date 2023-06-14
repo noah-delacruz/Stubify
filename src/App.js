@@ -1,6 +1,7 @@
 import React from 'react'
 import './App.css';
 import axios from 'axios';
+import Header from './components/Header';
 
 function App() {
     // Spotify params
@@ -8,12 +9,13 @@ function App() {
     const REDIRECT_URI = "http://localhost:3000"
     const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
     const RESPONSE_TYPE = "token"
-    const SCOPE = "user-top-read"
+    const SCOPE = "user-top-read user-read-private user-read-email"
 
     // States
     const [token, setToken] = React.useState("")
     // const [searchKey, setSearchKey] = React.useState("")
     const [topTracks, setTopTracks] = React.useState([])
+    const [profileInfo, setProfileInfo] = React.useState({})
 
     // Get access token
     React.useEffect(() => {
@@ -35,8 +37,9 @@ function App() {
     }
 
     // Get top tracks
-    async function searchTopTracks(e) {
+    async function getInfo(e) {
         e.preventDefault()
+        console.log("Getting info!")
         const {data} = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -48,8 +51,15 @@ function App() {
                 limit: 10
             }
         })
-        console.log(data.items)
+        console.log(data)
         setTopTracks(data.items)
+        const info = await axios.get("https://api.spotify.com/v1/me/", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        console.log(info.data)
+        setProfileInfo(info.data)
     }
     
     function renderArtists() {
@@ -62,23 +72,21 @@ function App() {
 
     return (
         <div className="App">
-            <header className="App-header">
-                <h1>Spotify React</h1>
-                {
-                    !token ? 
-                    <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`}>Login to Spotify</a> :
-                    <button onClick={logout}>Logout</button>
-                }
+            <Header />
+            {
+                !token ? 
+                <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`}>Login to Spotify</a> :
+                <button onClick={logout}>Logout</button>
+            }
 
-                {
-                    token ?
-                        <form onSubmit={searchTopTracks}>
-                            <button type={"submit"}>Top Tracks</button>
-                        </form>
-                    : <h2>Please login</h2>
-                }
-                {token && renderArtists()}
-            </header>
+            {
+                token ?
+                    <form onSubmit={getInfo}>
+                        <button type={"submit"}>Top Tracks</button>
+                    </form>
+                : <h3>Please login</h3>
+            }
+            {token && renderArtists()}
         </div>
     );
 }
