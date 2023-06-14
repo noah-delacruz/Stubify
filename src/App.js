@@ -3,6 +3,11 @@ import './App.css';
 import axios from 'axios';
 import Header from './components/Header';
 import Stub from './components/Stub';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import Button from '@mui/material/Button';
 
 function App() {
     // Spotify params
@@ -40,15 +45,12 @@ function App() {
 
     // Get top tracks
     async function getMediumInfo() {
-        // e.preventDefault()
         console.log("Getting info!")
         const {data} = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
             headers: {
                 Authorization: `Bearer ${token}`
             },
             params: {
-                // q: searchKey,
-                // type: "artist",
                 time_range: "medium_term",
                 limit: 10
             }
@@ -67,15 +69,12 @@ function App() {
 
     // Get short term top tracks
     async function getShortInfo() {
-        // e.preventDefault()
         console.log("Getting info!")
         const {data} = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
             headers: {
                 Authorization: `Bearer ${token}`
             },
             params: {
-                // q: searchKey,
-                // type: "artist",
                 time_range: "short_term",
                 limit: 10
             }
@@ -101,8 +100,6 @@ function App() {
                 Authorization: `Bearer ${token}`
             },
             params: {
-                // q: searchKey,
-                // type: "artist",
                 time_range: "long_term",
                 limit: 10
             }
@@ -119,24 +116,30 @@ function App() {
         setShowInfo(true)
     }
 
+    // Function for login button
+    function login() {
+        window.location.href = `${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`;
+    }
+
     return (
         <div className="App">
             <Header />
             {
                 !token ? 
-                <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`}>Login to Spotify</a> :
-                <button onClick={logout}>Logout</button>
+                <Button variant="outlined" onClick={login}>Login</Button> :
+                <Button variant="outlined" onClick={logout}>Logout</Button>
             }
 
-            {token && !showInfo && <button onClick={getMediumInfo}>Top Tracks</button>}
+            {token && !showInfo && <Button variant="outlined" onClick={getMediumInfo}>Get Top Tracks</Button>}
             {showInfo &&
                 <div>
-                    <button onClick={getShortInfo}>Last Month</button>
-                    <button onClick={getMediumInfo}>Last 6 Months</button>
-                    <button onClick={getLongInfo}>All Time</button>
+                    <Button variant="outlined" onClick={getShortInfo}>Last Month</Button>
+                    <Button variant="outlined" onClick={getMediumInfo}>Last 6 Months</Button>
+                    <Button variant="outlined" onClick={getLongInfo}>All Time</Button>
                 </div>
             }
             {showInfo && <Stub topTracks={topTracks} profileInfo={profileInfo}/>}
+            <p>Made by <a href="https://www.linkedin.com/in/noahdelacruz/" target="_blank">Noah dela Cruz</a></p>
         </div>
     );
 }

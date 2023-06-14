@@ -1,3 +1,12 @@
+* {
+    font-family: Roboto;
+    font-weight: 300;
+}
+
+.header {
+    font-weight: 700;
+}
+
 .App {
   text-align: center;
 }
